@@ -1,0 +1,31 @@
+# Simple deployment used to deploy and manage the app in nigelpoulton/getting-started-k8s:1.0
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tastreamer-deploy
+  namespace: tweets-analyzer
+  labels:
+    app: tastreamer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tastreamer
+  template:
+    metadata:
+      labels:
+        app: tastreamer
+    spec:
+      terminationGracePeriodSeconds: 1
+      containers:
+        - name: tastreamer-pod
+          image: yassinebkt/tastreamer:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: efs-volume
+              mountPath: "/input/tweets"
+      volumes:
+        - name: efs-volume
+          nfs:
+            server: 161.97.98.181
+            path: /mnt/vol/input/tweets
